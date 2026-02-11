@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bangalore Real Estate Price Predictor</title>
+
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+    <!-- Leaflet Routing Machine CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css" />
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <span class="logo-icon">🏠</span>
+                    <h1>Bangalore</h1>
+                </div>
+                <p class="subtitle">Real Estate Price Predictor</p>
+            </div>
+
+            <!-- Prediction Form -->
+            <form id="prediction-form" class="prediction-form">
+                <div class="form-group">
+                    <label for="location">
+                        <span class="label-icon">📍</span>
+                        Location
+                    </label>
+                    <input type="text" id="location" name="location" placeholder="e.g., Whitefield, Koramangala"
+                        list="locations-list" required>
+                    <datalist id="locations-list"></datalist>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="total_sqft">
+                            <span class="label-icon">📐</span>
+                            Area (sq.ft)
+                        </label>
+                        <input type="number" id="total_sqft" name="total_sqft" placeholder="1500" min="100" max="50000"
+                            required>
+                    </div>
+                    <div class="form-group">
+                        <label for="bhk">
+                            <span class="label-icon">🛏️</span>
+                            BHK
+                        </label>
+                        <select id="bhk" name="bhk" required>
+                            <option value="1">1 BHK</option>
+                            <option value="2" selected>2 BHK</option>
+                            <option value="3">3 BHK</option>
+                            <option value="4">4 BHK</option>
+                            <option value="5">5 BHK</option>
+                            <option value="6">6+ BHK</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="bath">
+                            <span class="label-icon">🚿</span>
+                            Bathrooms
+                        </label>
+                        <select id="bath" name="bath" required>
+                            <option value="1">1</option>
+                            <option value="2" selected>2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5+</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="balcony">
+                            <span class="label-icon">🌿</span>
+                            Balconies
+                        </label>
+                        <select id="balcony" name="balcony">
+                            <option value="0">0</option>
+                            <option value="1" selected>1</option>
+                            <option value="2">2</option>
+                            <option value="3">3+</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="area_type">
+                        <span class="label-icon">🏗️</span>
+                        Area Type
+                    </label>
+                    <select id="area_type" name="area_type">
+                        <option value="Super built-up Area">Super Built-up Area</option>
+                        <option value="Built-up Area">Built-up Area</option>
+                        <option value="Plot Area">Plot Area</option>
+                        <option value="Carpet Area">Carpet Area</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="predict-btn">
+                    <span class="btn-icon">✨</span>
+                    Predict Price
+                </button>
+            </form>
+
+            <!-- Results Section -->
+            <div id="results" class="results-section hidden">
+                <h3>Prediction Results</h3>
+
+                <div class="result-card primary">
+                    <div class="result-label">Estimated Price</div>
+                    <div class="result-value" id="total-price">₹0</div>
+                    <div class="result-sublabel" id="price-per-sqft">₹0 per sq.ft</div>
+                </div>
+
+                <div class="result-card">
+                    <div class="result-label">Confidence Range</div>
+                    <div class="confidence-range">
+                        <span id="ci-lower">₹0</span>
+                        <span class="range-separator">—</span>
+                        <span id="ci-upper">₹0</span>
+                        <span class="per-sqft">per sq.ft</span>
+                    </div>
+                </div>
+
+                <div class="comparables-section">
+                    <h4>Nearby Comparables</h4>
+                    <div id="comparables-list" class="comparables-list">
+                        <!-- Filled by JavaScript -->
+                    </div>
+                </div>
+
+                <div class="landmarks-section">
+                    <h4>📍 Nearby Landmarks</h4>
+                    <div id="landmarks-list" class="landmarks-list">
+                        <!-- Filled by JavaScript -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="sidebar-footer">
+                <p>Powered by Graph Neural Networks</p>
+                <p class="tech-stack">PyTorch Geometric • FastAPI • Leaflet</p>
+            </div>
+        </aside>
+
+        <!-- Map Container -->
+        <main class="map-container">
+            <div id="map"></div>
+
+            <!-- Map Legend -->
+            <div class="map-legend">
+                <div class="legend-title">Map Legend</div>
+                <div class="legend-item">
+                    <span class="marker prediction-marker"></span>
+                    Your Property
+                </div>
+                <div class="legend-item">
+                    <span class="marker comparable-marker"></span>
+                    Comparable
+                </div>
+                <div class="legend-divider"></div>
+                <div class="legend-item">
+                    <span class="legend-icon">🚇</span> Metro
+                </div>
+                <div class="legend-item">
+                    <span class="legend-icon">🚂</span> Railway
+                </div>
+                <div class="legend-item">
+                    <span class="legend-icon">🚌</span> Bus Stand
+                </div>
+                <div class="legend-item">
+                    <span class="legend-icon">🛒</span> Mall
+                </div>
+                <div class="legend-item">
+                    <span class="legend-icon">🏥</span> Hospital
+                </div>
+                <div class="legend-item">
+                    <span class="legend-icon">🏢</span> IT Park
+                </div>
+            </div>
+
+            <!-- Loading Overlay -->
+            <div id="loading-overlay" class="loading-overlay hidden">
+                <div class="loading-spinner"></div>
+                <p>Analyzing property data...</p>
+            </div>
+        </main>
+    </div>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <!-- Leaflet Routing Machine -->
+    <script src="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.min.js"></script>
+    <script src="app.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,31 @@
+{
+  "test_r2": 0.975334882736206,
+  "test_mae": 158.08245849609375,
+  "best_val_r2": 0.9739959836006165,
+  "features": [
+    "loc_target_mean",
+    "loc_target_std",
+    "loc_count_log",
+    "price_loc_percentile",
+    "area_target_mean",
+    "bhk_target_mean",
+    "total_sqft_clean",
+    "bhk",
+    "bath",
+    "balcony",
+    "area_type_encoded",
+    "bhk_sqft_interaction",
+    "bhk_bath_interaction",
+    "sqft_per_room",
+    "bath_bhk_ratio",
+    "balcony_bhk_ratio",
+    "sqft_per_bhk",
+    "sqft_bin",
+    "bhk_category",
+    "quality_score",
+    "loc_price_mean",
+    "loc_price_std",
+    "loc_price_median",
+    "loc_price_tier"
+  ]
+}
