@@ -207,6 +207,7 @@ After training, check the `results/` directory for:
 - **Backend**: FastAPI, Uvicorn
 - **Frontend**: HTML5, CSS3, JavaScript, Leaflet.js
 - **Visualization**: Matplotlib
+- **License**: MIT License
 
 ## 📝 Dataset
 
